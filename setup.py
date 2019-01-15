@@ -53,13 +53,10 @@ setuptools.setup(
     author='Ildoo Kim',
     author_email='ildoo@ildoo.net',
     license='Apache License 2.0',
-    package_dir={'tf_pose_data': 'models'},
-    packages=['tf_pose_data'] +
-             [pkg_name for pkg_name in setuptools.find_packages()  # main package
-              if 'tf_pose' in pkg_name],
+    packages=setuptools.find_packages(),
     ext_modules=[EXT],
-    package_data={'tf_pose_data': ['graph/cmu/graph_opt.pb',
-                                   'graph/mobilenet_thin/graph_opt.pb']},
+    data_files=[('models/graph/cmu', ['models/graph/cmu/graph_opt.pb']),
+                ('models/graph/mobilenet_thin', ['models/graph/mobilenet_thin/graph_opt.pb']), ],
     py_modules=[
         "pafprocess"
     ],

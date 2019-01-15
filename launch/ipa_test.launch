@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="video" default="$(find tfpose_ros)/etcs/dance.mp4" />
+    <arg name="video_width" default="1280" />
+    <arg name="video_height" default="720" />
+
+    <arg name="gpuid" default="0" />
+
+    <!--
+    <arg name="model" default="cmu" />
+    -->
+    <arg name="model" default="mobilenet_thin" />
+    <arg name="resolution" default="432x368" />
+
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+        <param name="video_device" value="/dev/video0" />
+        <param name="image_width" value="640" />
+        <param name="image_height" value="360" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="camera_frame_id" value="usb_cam" />
+        <param name="io_method" value="mmap"/>
+    </node>
+
+    <node name="pose_estimator" pkg="tfpose_ros" type="broadcaster_ros.py" output="screen" required="true">
+        <env name="CUDA_VISIBLE_DEVICES" value="$(arg gpuid)" />
+        <param name="camera" value="/usb_cam/image_raw" />
+        <param name="model" value="$(arg model)" />
+        <param name="resolution" value="$(arg resolution)" />
+    </node>
+
+    <node name="pose_estimator_vis" pkg="tfpose_ros" type="visualization.py" output="screen" required="true">
+        <param name="camera" value="/usb_cam/image_raw" />
+        <param name="pose" value="/pose_estimator/pose" />
+    </node>
+
+    <node name="video_recorder" pkg="video_recorder" type="recorder.py" output="screen" required="true">
+        <param name="output_width" type="int" value="640" />
+        <param name="output_height" type="int" value="720" />
+        <param name="output_format" value="xvid" />
+        <param name="output_path" value="" />
+
+        <param name="output_topic" value="~output" />
+
+        <param name="source1" value="/usb_cam/image_raw,0,0,640,360" />
+        <param name="source2" value="/pose_estimator_vis/output,0,360,640,360" />
+    </node>
+</launch>

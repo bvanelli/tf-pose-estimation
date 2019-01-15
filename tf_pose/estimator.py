@@ -14,7 +14,7 @@ from tf_pose.tensblur.smoother import Smoother
 
 try:
     from tf_pose.pafprocess import pafprocess
-except ModuleNotFoundError as e:
+except Exception as e:
     print(e)
     print('you need to build c++ library for pafprocess. See : https://github.com/ildoonet/tf-pose-estimation/tree/master/tf_pose/pafprocess')
     exit(-1)
